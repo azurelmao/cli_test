@@ -6,4 +6,4 @@
 *.iml
 *.dwarf
 shard.lock
-/server
+/cli_test

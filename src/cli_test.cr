@@ -18,14 +18,11 @@ module Test
   record PartialCommand, data : String
 
   def set_terminal_mode
-
-  end
-
-  def main
     before = Crystal::System::FileDescriptor.tcgetattr STDIN.fd
     mode = before
     mode.c_lflag &= ~LibC::ICANON
     mode.c_lflag &= ~LibC::ECHO
+    mode.c_lflag &= ~LibC::ISIG
 
     at_exit do
       Crystal::System::FileDescriptor.tcsetattr(STDIN.fd, LibC::TCSANOW, pointerof(before))
@@ -34,6 +31,10 @@ module Test
     if Crystal::System::FileDescriptor.tcsetattr(STDIN.fd, LibC::TCSANOW, pointerof(mode)) != 0
       raise IO::Error.from_errno "tcsetattr"
     end
+  end
+
+  def main
+    set_terminal_mode
 
     network_channel = Channel({String, Socket::IPAddress}).new
     command_channel = Channel(Command | PartialCommand).new
@@ -49,8 +50,7 @@ module Test
       when request = network_channel.receive
         print "\e[2K\r"
 
-        message, client_addr = request
-        Log.info { "Received message: \"#{message}\" from #{client_addr}" }
+        handle_request(request)
 
         print "> #{current_input}"
       when command = command_channel.receive
@@ -58,15 +58,7 @@ module Test
 
         case command
         when Command
-          case command.data
-          when "stop"
-            Log.info { "Stopping server!" }
-            exit
-          when "hello"
-            Log.info { "world!" }
-          else
-            Log.error &.emit "Unknown command!"
-          end
+          handle_command(command.data)
 
           current_input = ""
         when PartialCommand

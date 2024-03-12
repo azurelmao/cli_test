@@ -11,4 +11,9 @@ module Test
       channel.send request
     end
   end
+
+  def handle_request(request : {String, Socket::IPAddress})
+    message, client_addr = request
+    Log.info { "Received message: \"#{message}\" from #{client_addr}" }
+  end
 end

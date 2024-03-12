@@ -7,15 +7,15 @@ module Test
 
       case char
       when nil # STDIN was closed
-        break
+        exit
       when '\u{3}' # Ctrl+C
-        print "^C\r\n"
-        break
+        puts "^C"
+        exit
       when '\u{4}' # Ctrl+D
-        print "\r\n"
-        break
+        puts
+        exit
       # TODO: Arrow keys
-      when '\r' # Enter
+      when '\n' # Enter
         channel.send Command.new(command.join)
         command.clear
       when '\u{7f}' # Backspace
@@ -24,6 +24,18 @@ module Test
         command << char
         channel.send PartialCommand.new(command.join)
       end
+    end
+  end
+
+  def handle_command(command : String)
+    case command
+    when "stop"
+      Log.info { "Stopping server!" }
+      exit
+    when "hello"
+      Log.info { "world!" }
+    else
+      Log.error &.emit "Unknown command!"
     end
   end
 end
