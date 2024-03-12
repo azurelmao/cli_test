@@ -35,10 +35,8 @@ struct Test::Format
 
     if exception = entry.exception
       io << exception.message
-      io << '\r'
     else
       io << entry.message
-      io << '\r'
     end
 
     unless entry.data.empty?
@@ -54,7 +52,6 @@ struct Test::Format
         io << "#{name}:".to_s.ljust(max_size + 1)
         io << ' '
         io << value
-        io << '\r'
       end
     end
 
@@ -63,7 +60,6 @@ struct Test::Format
         backtrace.each do |frame|
           io << '\n'
           io << frame
-          io << '\r'
         end
       end
     end
