@@ -1,0 +1,13 @@
+name: cli_test
+version: 0.1.0
+
+authors:
+  - azurelmao <de_arcane@protonmail.com>
+
+targets:
+  woozy-test:
+    main: src/cli_test.cr
+
+crystal: '>= 1.11.2'
+
+license: MIT
