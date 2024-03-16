@@ -62,7 +62,7 @@ module Test
 
         handle_request(request)
 
-        print "> #{command_history[command_index].join}"
+        print "> #{command_history[command_index].join}\r\e[#{2 + cursor_pos}C"
       when key = key_channel.receive
         print "\e[2K\r"
 
